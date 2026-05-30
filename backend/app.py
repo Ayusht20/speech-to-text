@@ -19,6 +19,9 @@ CORS(app, origins=[
 
 DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API_KEY")
 
+@app.route("/", methods=["GET"])
+def home():
+    return jsonify({"message": "Hello! The container is working perfectly!"})
 
 @app.route("/health", methods=["GET"])
 def health():
@@ -157,4 +160,4 @@ def remove_transcript(transcript_id):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(host="0.0.0.0", port=7860, debug=False)

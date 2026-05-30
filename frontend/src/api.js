@@ -1,4 +1,4 @@
-const BASE = 'https://ayushDevloper.pythonanywhere.com'
+const BASE = 'https://ayushtrilokchandani-speech-to-text.hf.space'
               
 const getToken = () => localStorage.getItem('token')
 
