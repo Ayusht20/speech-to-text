@@ -24,37 +24,37 @@ VoiceScribe is a full-stack AI-powered speech-to-text platform that converts spo
 ### 🔐 Login
 
 <p align="center">
-  <img src="screenshots/login.png" alt="Login" width="85%">
+  <img src="screenshots/login.png" alt="Login">
 </p>
 
 ### 🏠 Home
 
 <p align="center">
-  <img src="screenshots/home.png" alt="Home" width="85%">
+  <img src="screenshots/home.png" alt="Home" >
 </p>
 
 ### 🌐 Language Selection
 
 <p align="center">
-  <img src="screenshots/language.png" alt="Language Selection" width="85%">
+  <img src="screenshots/language.png" alt="Language Selection" >
 </p>
 
 ### 🎙️ Recording Audio
 
 <p align="center">
-  <img src="screenshots/record.png" alt="Recording" width="85%">
+  <img src="screenshots/record.png" alt="Recording">
 </p>
 
 ### 📝 Generated Transcript
 
 <p align="center">
-  <img src="screenshots/transcript.png" alt="Transcript" width="85%">
+  <img src="screenshots/transcript.png" alt="Transcript" >
 </p>
 
 ### 📂 Transcript History
 
 <p align="center">
-  <img src="screenshots/history.png" alt="History" width="85%">
+  <img src="screenshots/history.png" alt="History">
 </p>
 
 ---
