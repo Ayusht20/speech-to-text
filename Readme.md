@@ -19,22 +19,42 @@ VoiceScribe is a full-stack AI-powered speech-to-text platform that converts spo
 | Health Check | https://ayushTrilokchandani-speech-to-text.hf.space/health |
 
 ---
-
 ## 📸 Screenshots
 
-<p align="center">
-  <img src="screenshots/login.png" width="48%" alt="Login">
-  <img src="screenshots/home.png" width="48%" alt="Home">
-</p>
+### 🔐 Login
 
 <p align="center">
-  <img src="screenshots/language.png" width="48%" alt="Language Selection">
-  <img src="screenshots/record.png" width="48%" alt="Recording">
+  <img src="screenshots/login.png" alt="Login" width="85%">
 </p>
 
+### 🏠 Home
+
 <p align="center">
-  <img src="screenshots/transcript.png" width="48%" alt="Transcript">
-  <img src="screenshots/history.png" width="48%" alt="History">
+  <img src="screenshots/home.png" alt="Home" width="85%">
+</p>
+
+### 🌐 Language Selection
+
+<p align="center">
+  <img src="screenshots/language.png" alt="Language Selection" width="85%">
+</p>
+
+### 🎙️ Recording Audio
+
+<p align="center">
+  <img src="screenshots/record.png" alt="Recording" width="85%">
+</p>
+
+### 📝 Generated Transcript
+
+<p align="center">
+  <img src="screenshots/transcript.png" alt="Transcript" width="85%">
+</p>
+
+### 📂 Transcript History
+
+<p align="center">
+  <img src="screenshots/history.png" alt="History" width="85%">
 </p>
 
 ---
