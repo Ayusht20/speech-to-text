@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
 import { fetchHistory, deleteTranscript } from '../api.js'
 
-function formatDate(iso) {
-  return new Date(iso).toLocaleString('en-IN', {
-    day: '2-digit', month: 'short', year: 'numeric',
-    hour: '2-digit', minute: '2-digit',
-  })
+function timeAgo(iso) {
+  const diff = Date.now() - new Date(iso).getTime()
+  const m = Math.floor(diff / 60000)
+  if (m < 1) return 'just now'
+  if (m < 60) return `${m}m ago`
+  const h = Math.floor(m / 60)
+  if (h < 24) return `${h}h ago`
+  return `${Math.floor(h / 24)}d ago`
 }
 
 export default function HistoryPanel() {
@@ -16,14 +19,9 @@ export default function HistoryPanel() {
 
   const load = async () => {
     setLoading(true)
-    try {
-      const data = await fetchHistory()
-      setTranscripts(data)
-    } catch (e) {
-      setError(e.message)
-    } finally {
-      setLoading(false)
-    }
+    try { setTranscripts(await fetchHistory()) }
+    catch (e) { setError(e.message) }
+    finally { setLoading(false) }
   }
 
   useEffect(() => { load() }, [])
@@ -32,102 +30,105 @@ export default function HistoryPanel() {
     if (!confirm('Delete this transcript?')) return
     try {
       await deleteTranscript(id)
-      setTranscripts((prev) => prev.filter((t) => t.id !== id))
-    } catch (e) {
-      alert('Delete failed: ' + e.message)
-    }
+      setTranscripts((p) => p.filter((t) => t.id !== id))
+    } catch (e) { alert('Delete failed: ' + e.message) }
   }
 
   const downloadTxt = (text, id) => {
     const blob = new Blob([text], { type: 'text/plain' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
-    a.href = url
-    a.download = `transcript-${id.slice(0, 8)}.txt`
-    a.click()
+    a.href = url; a.download = `transcript-${id.slice(0, 8)}.txt`; a.click()
     URL.revokeObjectURL(url)
   }
 
-  if (loading) {
-    return (
-      <div className="flex justify-center py-12">
-        <div className="w-8 h-8 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin" />
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm">
-        ⚠️ {error}
-      </div>
-    )
-  }
-
-  if (transcripts.length === 0) {
-    return (
-      <div className="text-center py-12 text-gray-400">
-        <p className="text-4xl mb-3">📂</p>
-        <p className="text-sm">No transcripts yet. Record something first!</p>
-      </div>
-    )
-  }
-
-  return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-between mb-1">
-        <p className="text-sm text-gray-500">{transcripts.length} transcript{transcripts.length !== 1 ? 's' : ''} saved</p>
-        <button onClick={load} className="text-xs text-violet-600 hover:underline">↻ Refresh</button>
-      </div>
-
-      {transcripts.map((t) => (
-        <div
-          key={t.id}
-          className="bg-white border border-gray-200 rounded-xl p-4 hover:border-violet-300 transition"
-        >
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex-1 min-w-0">
-              <p
-                className={`text-sm text-gray-800 ${expanded === t.id ? '' : 'line-clamp-2'} cursor-pointer`}
-                onClick={() => setExpanded(expanded === t.id ? null : t.id)}
-              >
-                {t.text || <span className="italic text-gray-400">Empty transcript</span>}
-              </p>
-              <div className="flex gap-3 mt-2 text-xs text-gray-400">
-                <span>🕐 {formatDate(t.created_at)}</span>
-                <span>📝 {t.words} words</span>
-                <span>🎯 {t.confidence}%</span>
-              </div>
-            </div>
-
-            <div className="flex gap-2 shrink-0">
-              <button
-                onClick={() => downloadTxt(t.text, t.id)}
-                className="p-1.5 text-gray-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition"
-                title="Download"
-              >
-                ⬇️
-              </button>
-              <button
-                onClick={() => handleDelete(t.id)}
-                className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition"
-                title="Delete"
-              >
-                🗑️
-              </button>
-            </div>
-          </div>
-
-          {expanded === t.id && (
-            <button
-              onClick={() => setExpanded(null)}
-              className="mt-2 text-xs text-violet-500 hover:underline"
-            >
-              Show less
-            </button>
-          )}
+  if (loading) return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {[...Array(3)].map((_, i) => (
+        <div key={i} style={{ background: 'var(--sky)', border: '1px solid var(--border)', borderRadius: 14, padding: 16 }}>
+          <div className="shimmer" style={{ height: 12, width: '100%', marginBottom: 8 }} />
+          <div className="shimmer" style={{ height: 12, width: '65%' }} />
         </div>
       ))}
+    </div>
+  )
+
+  if (error) return (
+    <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 12, padding: '12px 16px', color: '#dc2626', fontSize: 13 }}>
+      ⚠️ {error}
+    </div>
+  )
+
+  if (transcripts.length === 0) return (
+    <div style={{ textAlign: 'center', padding: '40px 0' }} className="fade-up">
+      <p style={{ fontSize: 36, marginBottom: 10 }}>📂</p>
+      <p style={{ color: 'var(--text-muted)', fontSize: 13, fontWeight: 500 }}>No saved transcripts yet</p>
+      <p style={{ color: '#94a3b8', fontSize: 12, marginTop: 4 }}>Record something and hit Save</p>
+    </div>
+  )
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600 }}>
+          {transcripts.length} transcript{transcripts.length !== 1 ? 's' : ''}
+        </span>
+        <button onClick={load} style={{ fontSize: 12, color: 'var(--blue)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
+          ↻ Refresh
+        </button>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {transcripts.map((t, i) => (
+          <div
+            key={t.id}
+            className="fade-up"
+            style={{
+              background: '#fff', border: '1px solid var(--border)', borderRadius: 14,
+              padding: 16, transition: 'border-color 0.2s, box-shadow 0.2s',
+              animationDelay: `${i * 0.05}s`, opacity: 0,
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#93c5fd'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(37,99,235,0.08)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'none' }}
+          >
+            <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p
+                  onClick={() => setExpanded(expanded === t.id ? null : t.id)}
+                  style={{
+                    fontSize: 13, lineHeight: 1.6, color: 'var(--text)', cursor: 'pointer',
+                    display: '-webkit-box', WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: expanded === t.id ? 'unset' : 2,
+                    overflow: expanded === t.id ? 'visible' : 'hidden',
+                  }}
+                >
+                  {t.text || <span style={{ fontStyle: 'italic', color: 'var(--text-muted)' }}>Empty</span>}
+                </p>
+                <div style={{ display: 'flex', gap: 12, marginTop: 8, flexWrap: 'wrap' }}>
+                  {[`🕐 ${timeAgo(t.created_at)}`, `📝 ${t.words} words`, `🎯 ${t.confidence}%`].map((s) => (
+                    <span key={s} style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>{s}</span>
+                  ))}
+                </div>
+                {expanded === t.id && (
+                  <button onClick={() => setExpanded(null)} style={{ marginTop: 6, fontSize: 12, color: 'var(--blue)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
+                    Show less ↑
+                  </button>
+                )}
+              </div>
+              <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+                <button onClick={() => downloadTxt(t.text, t.id)}
+                  style={{ padding: 7, borderRadius: 8, background: 'var(--sky)', border: '1px solid var(--border)', cursor: 'pointer', fontSize: 13, lineHeight: 1, transition: 'all 0.15s' }}
+                  title="Download"
+                >⬇️</button>
+                <button onClick={() => handleDelete(t.id)}
+                  style={{ padding: 7, borderRadius: 8, background: '#fef2f2', border: '1px solid #fecaca', cursor: 'pointer', fontSize: 13, lineHeight: 1, transition: 'all 0.15s' }}
+                  title="Delete"
+                >🗑️</button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

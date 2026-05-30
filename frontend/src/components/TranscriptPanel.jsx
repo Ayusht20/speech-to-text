@@ -5,113 +5,130 @@ export default function TranscriptPanel({ result, loading, error, user, onSaved,
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
 
-  const copyText = () => {
-    navigator.clipboard.writeText(result.transcript)
-    alert('Copied!')
-  }
+  const copyText = () => { navigator.clipboard.writeText(result.transcript); alert('Copied!') }
 
   const downloadTxt = () => {
     const b = new Blob([result.transcript], { type: 'text/plain' })
     const url = URL.createObjectURL(b)
     const a = document.createElement('a')
-    a.href = url
-    a.download = `transcript-${Date.now()}.txt`
-    a.click()
+    a.href = url; a.download = `transcript-${Date.now()}.txt`; a.click()
     URL.revokeObjectURL(url)
   }
 
   const handleSave = async () => {
-    if (!user) {
-      onLoginRequired()
-      return
-    }
+    if (!user) { onLoginRequired(); return }
     setSaving(true)
     try {
       await transcribeAudio(blob, language, true)
-      setSaved(true)
-      onSaved()
-    } catch (e) {
-      alert('Save failed: ' + e.message)
-    } finally {
-      setSaving(false)
-    }
+      setSaved(true); onSaved()
+    } catch (e) { alert('Save failed: ' + e.message) }
+    finally { setSaving(false) }
   }
 
-  if (loading) {
-    return (
-      <div className="mt-6 flex flex-col items-center gap-3 text-gray-500">
-        <div className="w-8 h-8 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin" />
-        <p className="text-sm">Transcribing…</p>
+  if (loading) return (
+    <div style={{ marginTop: 20 }} className="fade-up">
+      <div className="card-inset" style={{ padding: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+          <span style={{
+            width: 16, height: 16, border: '2.5px solid #bfdbfe',
+            borderTopColor: 'var(--blue)', borderRadius: '50%',
+            display: 'inline-block', animation: 'spin 0.7s linear infinite'
+          }} />
+          <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Transcribing your audio…</span>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div className="shimmer" style={{ height: 12, width: '100%' }} />
+          <div className="shimmer" style={{ height: 12, width: '80%' }} />
+          <div className="shimmer" style={{ height: 12, width: '60%' }} />
+        </div>
       </div>
-    )
-  }
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  )
 
-  if (error) {
-    return (
-      <div className="mt-6 bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm">
-        ⚠️ {error}
+  if (error) return (
+    <div style={{ marginTop: 20, background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 12, padding: '12px 16px', color: '#dc2626', fontSize: 13 }} className="fade-up">
+      ⚠️ {error}
+    </div>
+  )
+
+  if (!result) return (
+    <div style={{ marginTop: 20 }} className="fade-up delay-3">
+      <div className="card-inset" style={{ padding: 28, textAlign: 'center' }}>
+        <div style={{ fontSize: 32, marginBottom: 8 }}>🎤</div>
+        <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>Your transcript will appear here</p>
       </div>
-    )
-  }
-
-  if (!result) {
-    return (
-      <p className="mt-6 text-center text-gray-400 text-sm">
-        Your transcript will appear here after recording.
-      </p>
-    )
-  }
+    </div>
+  )
 
   return (
-    <div className="mt-6 w-full">
-      <div className="flex gap-4 mb-2 text-xs text-gray-400">
-        <span>📝 {result.words} words</span>
-        <span>🎯 {result.confidence}%</span>
-        <span>🌐 {result.language}</span>
+    <div style={{ marginTop: 20 }} className="fade-up">
+      {/* Stats row */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
+        {[
+          { icon: '📝', val: `${result.words} words` },
+          { icon: '🎯', val: `${result.confidence}%` },
+          { icon: '🌐', val: result.language?.toUpperCase() },
+        ].map((s) => (
+          <span key={s.val} style={{
+            display: 'flex', alignItems: 'center', gap: 5,
+            fontSize: 11, fontWeight: 600, color: 'var(--blue)',
+            background: 'var(--sky-mid)', border: '1px solid #bfdbfe',
+            borderRadius: 99, padding: '4px 10px'
+          }}>
+            {s.icon} {s.val}
+          </span>
+        ))}
       </div>
 
-      <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 min-h-[100px] text-gray-800 text-sm leading-relaxed whitespace-pre-wrap">
-        {result.transcript || (
-          <span className="text-gray-400 italic">No speech detected.</span>
-        )}
+      {/* Transcript box */}
+      <div className="card-inset" style={{ padding: '16px 18px', minHeight: 100, fontSize: 14, lineHeight: 1.75, color: 'var(--text)', whiteSpace: 'pre-wrap' }}>
+        {result.transcript || <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>No speech detected. Try speaking louder.</span>}
       </div>
 
+      {/* Action buttons */}
       {result.transcript && (
-        <div className="flex gap-3 mt-3 flex-wrap">
-          <button
-            onClick={copyText}
-            className="px-4 py-2 bg-violet-600 text-white text-sm rounded-lg hover:bg-violet-700 transition"
-          >
-            📋 Copy
-          </button>
-          <button
-            onClick={downloadTxt}
-            className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-100 transition"
-          >
-            ⬇️ Download .txt
-          </button>
+        <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
+          {[
+            { label: '📋 Copy', onClick: copyText, style: { background: 'var(--sky)', border: '1.5px solid var(--border)', color: 'var(--navy)' } },
+            { label: '⬇️ Download', onClick: downloadTxt, style: { background: 'var(--sky)', border: '1.5px solid var(--border)', color: 'var(--navy)' } },
+          ].map((btn) => (
+            <button key={btn.label} onClick={btn.onClick} style={{
+              ...btn.style, padding: '9px 16px', borderRadius: 10,
+              fontSize: 13, fontWeight: 600, cursor: 'pointer',
+              fontFamily: 'Plus Jakarta Sans, sans-serif', transition: 'all 0.15s',
+            }}
+              onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
+              onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+            >{btn.label}</button>
+          ))}
 
-          {/* Save button */}
           {saved ? (
-            <span className="px-4 py-2 bg-green-50 text-green-600 text-sm rounded-lg border border-green-200">
-              ✅ Saved!
-            </span>
+            <span style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '9px 16px', borderRadius: 10, fontSize: 13, fontWeight: 600,
+              background: '#f0fdf4', border: '1.5px solid #bbf7d0', color: '#16a34a'
+            }}>✅ Saved!</span>
           ) : (
             <button
               onClick={handleSave}
               disabled={saving}
-              className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition disabled:opacity-60"
-            >
-              {saving ? 'Saving…' : user ? '💾 Save' : '🔒 Save (Login required)'}
-            </button>
+              style={{
+                padding: '9px 16px', borderRadius: 10, fontSize: 13, fontWeight: 600,
+                cursor: saving ? 'not-allowed' : 'pointer', border: 'none',
+                fontFamily: 'Plus Jakarta Sans, sans-serif', transition: 'all 0.15s',
+                background: 'linear-gradient(135deg, #0f2554, #2563eb)',
+                color: 'white', opacity: saving ? 0.6 : 1,
+                boxShadow: '0 3px 12px rgba(37,99,235,0.2)',
+              }}
+            >{saving ? '⏳ Saving…' : user ? '💾 Save' : '🔒 Save'}</button>
           )}
         </div>
       )}
 
-      {/* Guest nudge */}
       {!user && result.transcript && (
-        <p className="mt-3 text-xs text-gray-400">
-          💡 Create a free account to save transcripts and view history.
+        <p style={{ marginTop: 10, fontSize: 12, color: 'var(--text-muted)' }}>
+          💡 Sign in to save transcripts and access history
         </p>
       )}
     </div>

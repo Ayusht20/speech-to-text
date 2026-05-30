@@ -35,124 +35,158 @@ export default function App() {
     if (token && email) setUser(email)
   }, [])
 
-  const handleAuth = (email) => {
-    setUser(email)
-    setShowAuth(false)
-  }
-
-  const handleLogout = () => {
-    logout()
-    setUser(null)
-    setResult(null)
-    setError(null)
-    setTab('record')
-  }
-
-  // Show auth modal when guest tries to save
-  const handleLoginRequired = () => setShowAuth(true)
+  const handleAuth = (email) => { setUser(email); setShowAuth(false) }
+  const handleLogout = () => { logout(); setUser(null); setResult(null); setError(null); setTab('record') }
 
   if (showAuth && !user) {
     return (
-      <div className="relative">
-        <AuthForm onAuth={handleAuth} />
-        <button
-          onClick={() => setShowAuth(false)}
-          className="fixed top-4 right-4 text-gray-400 hover:text-gray-600 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow"
-        >
-          ✕
-        </button>
-      </div>
+      <>
+        <div className="bg-mesh" /><div className="bg-grid" />
+        <AuthForm onAuth={handleAuth} onBack={() => setShowAuth(false)} />
+      </>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg">
+    <>
+      <div className="bg-mesh" />
+      <div className="bg-grid" />
 
-        {/* Header */}
-        <div className="flex items-center justify-between pt-6 px-8">
-          <div>
-            <h1 className="text-xl font-semibold text-gray-900">🎙️ Speech to Text</h1>
-            <p className="text-xs text-gray-400 mt-0.5">
-              {user ? user : 'Guest — transcribe freely'}
-            </p>
+      <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+
+        {/* Top navbar */}
+        <nav style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '16px 24px', borderBottom: '1px solid var(--border)',
+          background: 'rgba(248,250,255,0.8)', backdropFilter: 'blur(12px)',
+          position: 'sticky', top: 0, zIndex: 10,
+        }} className="fade-up">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{
+              width: 36, height: 36, borderRadius: 10,
+              background: 'linear-gradient(135deg, #0f2554, #2563eb)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 18, boxShadow: '0 3px 10px rgba(37,99,235,0.2)'
+            }}>🎙️</div>
+            <span style={{ fontFamily: 'Instrument Serif, serif', fontSize: 20, color: 'var(--navy)' }}>
+              VoiceScribe
+            </span>
           </div>
-          {user ? (
-            <button
-              onClick={handleLogout}
-              className="text-xs text-gray-400 hover:text-red-500 border border-gray-200 px-3 py-1.5 rounded-lg hover:border-red-200 transition"
-            >
-              Logout
-            </button>
-          ) : (
-            <button
-              onClick={() => setShowAuth(true)}
-              className="text-xs bg-violet-600 text-white px-3 py-1.5 rounded-lg hover:bg-violet-700 transition"
-            >
-              Login / Register
-            </button>
-          )}
-        </div>
 
-        {/* Tabs — History only visible when logged in */}
-        <div className="flex gap-1 mx-8 mt-5 bg-gray-100 rounded-xl p-1">
-          <button
-            onClick={() => setTab('record')}
-            className={`flex-1 py-2 rounded-lg text-sm font-medium transition
-              ${tab === 'record' ? 'bg-white text-violet-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-          >
-            🎙️ Record
-          </button>
-          <button
-            onClick={() => user ? setTab('history') : setShowAuth(true)}
-            className={`flex-1 py-2 rounded-lg text-sm font-medium transition
-              ${tab === 'history' && user ? 'bg-white text-violet-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-          >
-            {user ? '📂 History' : '🔒 History'}
-          </button>
-        </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {user ? (
+              <>
+                <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 500 }}>{user}</span>
+                <button onClick={handleLogout} style={{
+                  padding: '7px 14px', borderRadius: 99, fontSize: 12, fontWeight: 600,
+                  background: 'var(--sky)', border: '1.5px solid var(--border)',
+                  color: 'var(--navy)', cursor: 'pointer', fontFamily: 'Plus Jakarta Sans, sans-serif',
+                  transition: 'all 0.15s',
+                }}>Logout</button>
+              </>
+            ) : (
+              <button onClick={() => setShowAuth(true)} style={{
+                padding: '8px 18px', borderRadius: 99, fontSize: 13, fontWeight: 600, border: 'none',
+                background: 'linear-gradient(135deg, #0f2554, #2563eb)',
+                color: 'white', cursor: 'pointer', fontFamily: 'Plus Jakarta Sans, sans-serif',
+                boxShadow: '0 3px 12px rgba(37,99,235,0.25)', transition: 'all 0.15s',
+              }}>Sign In</button>
+            )}
+          </div>
+        </nav>
 
-        {/* Content */}
-        <div className="px-8 pb-8 pt-6">
-          {tab === 'record' || !user ? (
-            <>
-              <div className="mb-6">
-                <label className="block text-xs text-gray-500 mb-1.5">🌐 Select Language</label>
-                <select
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-violet-300"
-                >
-                  {LANGUAGES.map((l) => (
-                    <option key={l.code} value={l.code}>{l.label}</option>
-                  ))}
-                </select>
+        {/* Main */}
+        <main style={{ flex: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '32px 16px 48px' }}>
+          <div style={{ width: '100%', maxWidth: 520 }}>
+
+            {/* Hero text */}
+            <div style={{ textAlign: 'center', marginBottom: 28 }} className="fade-up delay-1">
+              <h2 style={{ fontFamily: 'Instrument Serif, serif', fontSize: 32, color: 'var(--navy)', lineHeight: 1.2, marginBottom: 8 }}>
+                Speak. Transcribe. <span style={{ fontStyle: 'italic', color: 'var(--blue)' }}>Done.</span>
+              </h2>
+              <p style={{ fontSize: 14, color: 'var(--text-muted)', maxWidth: 340, margin: '0 auto' }}>
+                {user
+                  ? `Welcome back — record and save your transcripts`
+                  : 'Record freely without an account · Sign in to save & revisit'}
+              </p>
+            </div>
+
+            {/* Main card */}
+            <div className="card fade-up delay-2">
+              {/* Tabs */}
+              <div style={{ display: 'flex', borderBottom: '1px solid var(--border)' }}>
+                {[
+                  { key: 'record', label: '🎙️ Record' },
+                  { key: 'history', label: user ? '📂 History' : '🔒 History' },
+                ].map(({ key, label }) => (
+                  <button
+                    key={key}
+                    onClick={() => key === 'history' && !user ? setShowAuth(true) : setTab(key)}
+                    style={{
+                      flex: 1, padding: '14px 0', fontSize: 13, fontWeight: 600,
+                      border: 'none', background: 'none', cursor: 'pointer',
+                      fontFamily: 'Plus Jakarta Sans, sans-serif', transition: 'all 0.15s',
+                      color: tab === key && (key === 'record' || user) ? 'var(--navy)' : 'var(--text-muted)',
+                      borderBottom: tab === key && (key === 'record' || user)
+                        ? '2.5px solid var(--blue)' : '2.5px solid transparent',
+                    }}
+                  >{label}</button>
+                ))}
               </div>
 
-              <Recorder
-                language={language}
-                onTranscript={(data) => { setResult(data); setError(null) }}
-                onError={setError}
-                onLoading={setLoading}
-                onBlob={setBlob}
-              />
-              <TranscriptPanel
-                result={result}
-                loading={loading}
-                error={error}
-                user={user}
-                blob={blob}
-                language={language}
-                onSaved={() => setHistoryKey((k) => k + 1)}
-                onLoginRequired={handleLoginRequired}
-              />
-            </>
-          ) : (
-            <HistoryPanel key={historyKey} />
-          )}
-        </div>
+              {/* Content */}
+              <div style={{ padding: 24 }}>
+                {tab === 'record' || !user ? (
+                  <>
+                    {/* Language */}
+                    <div style={{ marginBottom: 22 }} className="fade-up delay-3">
+                      <label style={{
+                        display: 'block', fontSize: 11, fontWeight: 700,
+                        color: 'var(--text-muted)', marginBottom: 8,
+                        textTransform: 'uppercase', letterSpacing: '0.06em'
+                      }}>Language</label>
+                      <select
+                        value={language}
+                        onChange={(e) => setLanguage(e.target.value)}
+                        className="input-field"
+                        style={{ cursor: 'pointer' }}
+                      >
+                        {LANGUAGES.map((l) => (
+                          <option key={l.code} value={l.code}>{l.label}</option>
+                        ))}
+                      </select>
+                    </div>
 
+                    <div className="fade-up delay-4">
+                      <Recorder
+                        language={language}
+                        onTranscript={(data) => { setResult(data); setError(null) }}
+                        onError={setError}
+                        onLoading={setLoading}
+                        onBlob={setBlob}
+                      />
+                    </div>
+
+                    <TranscriptPanel
+                      result={result} loading={loading} error={error}
+                      user={user} blob={blob} language={language}
+                      onSaved={() => setHistoryKey((k) => k + 1)}
+                      onLoginRequired={() => setShowAuth(true)}
+                    />
+                  </>
+                ) : (
+                  <HistoryPanel key={historyKey} />
+                )}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <p style={{ textAlign: 'center', fontSize: 12, color: '#94a3b8', marginTop: 24 }} className="fade-up delay-5">
+              Powered by Deepgram · Neon · Flask · React
+            </p>
+          </div>
+        </main>
       </div>
-    </div>
+    </>
   )
 }
