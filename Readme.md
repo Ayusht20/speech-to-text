@@ -23,7 +23,11 @@ A full-stack web app that converts spoken audio into accurate text — powered b
 ## 📸 Screenshots
 
 
-Login | Home | Language | Record | Transcript | History |
+<!-- | Record | Transcript | History |
+|---|---|---|
+| ![record](screenshots/record.png) |
+| ![record](screenshots/record.png) | ![transcript](screenshots/transcript.png) | ![history](screenshots/history.png) | -->
+| Login | Home | Language | Record | Transcript | History |
 |---|---|---||---|---|---|
 | ![login](screenshots/login.png) |
 | ![home](screenshots/home.png) |
