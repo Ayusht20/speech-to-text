@@ -1,5 +1,5 @@
-const BASE = 'https://ayushdevloper.pythonanywhere.com'
-
+const BASE = 'https://ayushDevloper.pythonanywhere.com'
+              
 const getToken = () => localStorage.getItem('token')
 
 const authHeaders = () => ({
