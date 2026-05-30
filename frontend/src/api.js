@@ -1,4 +1,4 @@
-const BASE = 'http://localhost:5000'
+const BASE = 'https://ayushdevloper.pythonanywhere.com'
 
 const getToken = () => localStorage.getItem('token')
 

@@ -12,7 +12,10 @@ from auth import hash_password, check_password, generate_token, token_required
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=[
+    "http://localhost:3000",
+    "https://speech-to-text-weld-seven.vercel.app"
+])
 
 DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API_KEY")
 
