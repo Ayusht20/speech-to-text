@@ -22,10 +22,12 @@ A full-stack web app that converts spoken audio into accurate text — powered b
 
 ## 📸 Screenshots
 
-> _Add screenshots here after deployment_
 
 | Record | Transcript | History |
 |---|---|---|
+| ![login](screenshots/login.png) |
+| ![home](screenshots/home.png) |
+| ![language](screenshots/language.png) |
 | ![record](screenshots/record.png) | ![transcript](screenshots/transcript.png) | ![history](screenshots/history.png) |
 
 ---
