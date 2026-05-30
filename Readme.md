@@ -2,7 +2,7 @@
 
 ![Flask](https://img.shields.io/badge/Flask-Python-0f2554?style=flat-square&logo=flask)
 ![React](https://img.shields.io/badge/React-Vite-61DAFB?style=flat-square&logo=react)
-![Deepgram](https://img.shields.io/badge/Deepgram-Nova--2-00d4ff?style=flat-square)
+![Deepgram](https://img.shields.io/badge/Deepgram-00d4ff?style=flat-square)
 ![Neon](https://img.shields.io/badge/Neon-PostgreSQL-39e09b?style=flat-square)
 ![HuggingFace](https://img.shields.io/badge/HuggingFace-Spaces-FFD21E?style=flat-square&logo=huggingface)
 
@@ -37,7 +37,7 @@ A full-stack web app that converts spoken audio into accurate text — powered b
 | **Frontend** | React 18, Vite, Tailwind CSS |
 | **Backend** | Flask, Flask-CORS, PyJWT, bcrypt |
 | **Database** | Neon (PostgreSQL) |
-| **STT API** | Deepgram Nova-2 |
+| **STT API** | Deepgram |
 | **Backend Host** | Hugging Face Spaces |
 | **Frontend Host** | Vercel |
 
